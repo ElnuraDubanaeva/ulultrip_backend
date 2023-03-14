@@ -1,7 +1,9 @@
-from rest_framework import viewsets, generics, permissions
+from rest_framework import viewsets, generics, permissions, mixins
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from .models import Tour, Review, Category, Region, Guide
+from rest_framework.viewsets import GenericViewSet
+
+from .models import Tour, Review, Category, Region, Guide, AboutUs
 from .permissions import IsOwnerOrReadOnly
 from .serializers import (
     GuideSerializer,
@@ -10,6 +12,7 @@ from .serializers import (
     RegionSerializer,
     CategorySerializer,
     GetTitleSlugSerializer,
+    AboutUsSerializer, ShortTourSerializer
 )
 from django_filters.rest_framework import DjangoFilterBackend
 from .service import TourFilter
@@ -25,36 +28,17 @@ class TourListView(generics.ListAPIView):
     filter_backends = (DjangoFilterBackend, SearchFilter, OrderingFilter)
     filterset_class = TourFilter
     queryset = Tour.objects.all()
-    serializer_class = TourSerializer
+    serializer_class = ShortTourSerializer
     search_fields = ("^title",)
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
-    permission_classes = [IsOwnerOrReadOnly, permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [IsOwnerOrReadOnly]
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
-
-
-# class ReviewListView(generics.ListAPIView):
-#     queryset = Review.objects.all()
-#     serializer_class = ReviewSerializer
-
-
-# class ReviewCreateView(APIView):
-#     def post(self, request, id):
-#         post = Tour.objects.get(id=id)
-#         Review.objects.create(
-#             author=request.user,
-#             post_id=id,
-#             text=request.data['text'],
-#             rating=request.data['rating']
-#         )
-#         return Response({'review': "Review was created successfully!"})
-#
-#     permission_classes = [permissions.IsAuthenticated]
 
 
 class CategoryListView(generics.ListAPIView):
@@ -67,13 +51,37 @@ class RegionListView(generics.ListAPIView):
     serializer_class = RegionSerializer
 
 
-@api_view(["GET"])
-def tour_list_view(request, slug):
-    tour = Tour.objects.filter(slug=slug)
-    serializer = TourSerializer(tour, many=True)
-    return Response(data=serializer.data)
+class TourDetail(
+                 mixins.RetrieveModelMixin,
+                 GenericViewSet):
+    queryset = Tour.objects.all()
+    serializer_class = TourSerializer
+
+    lookup_field = 'slug'
+    lookup_url_kwarg = 'slug'
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        slug = self.kwargs.get(self.lookup_field)
+        if slug:
+            queryset = queryset.filter(slug=slug)
+        return queryset
 
 
 class GetSlugTitleListView(generics.ListAPIView):
     queryset = Tour.objects.all()
     serializer_class = GetTitleSlugSerializer
+
+
+class TourReviewsList(generics.ListAPIView):
+    serializer_class = ReviewSerializer
+
+    def get_queryset(self):
+        slug = self.kwargs.get('slug')
+        tour = Tour.objects.get(slug=slug)
+        return Review.objects.filter(post=tour)
+
+
+class AboutUsList(generics.ListAPIView):
+    queryset = AboutUs.objects.all()
+    serializer_class = AboutUsSerializer
