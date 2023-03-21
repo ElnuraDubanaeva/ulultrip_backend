@@ -51,7 +51,7 @@ class RegisterSerializer(serializers.ModelSerializer):
         )
 
     def validate(self, attrs):
-        username = attrs.get("username").split(' ')
+        username = attrs.get("username").split(" ")
         for name in username:
             if not name.isalpha() or (name.isalpha() and len(username) != 2):
                 raise serializers.ValidationError(
