@@ -120,6 +120,6 @@ PASSWORD_RESET_TIMEOUT = 14400
 from .jazzmin import *
 
 if PRODUCTION:
-    from .development import *
-else:
     from .production import *
+else:
+    from .development import *
