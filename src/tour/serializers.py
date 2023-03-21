@@ -64,7 +64,9 @@ class ShortTourSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Tour
-        fields = "id title price slug duration region average_rating tour_images".split()
+        fields = (
+            "id title price slug duration region average_rating tour_images".split()
+        )
 
 
 class ReviewSerializer(serializers.ModelSerializer):

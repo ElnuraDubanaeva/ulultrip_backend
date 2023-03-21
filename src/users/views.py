@@ -11,7 +11,7 @@ from .serializers import (
     LoginSerializer,
     RequestResetPasswordEmailSerializer,
     SetNewPasswordSerializer,
-    CheckDigitsSerializer
+    CheckDigitsSerializer,
 )
 from .models import User
 from django.conf import settings
@@ -32,8 +32,13 @@ class RegisterView(generics.GenericAPIView):
         user_data = serializer.data
         user = User.objects.get(email=user_data["email"])
         UserService.send_mail_register(user=user, request=request)
-        return Response({"user": user_data,
-                         "message": "We have sent you link to activate your email"}, status=status.HTTP_201_CREATED)
+        return Response(
+            {
+                "user": user_data,
+                "message": "We have sent you link to activate your email",
+            },
+            status=status.HTTP_201_CREATED,
+        )
 
 
 class VerifyEmailView(APIView):
@@ -55,7 +60,9 @@ class VerifyEmailView(APIView):
                 user.is_verified = True
                 user.save()
             return Response(
-                {"email": "Successfully activated"}, status=status.HTTP_200_OK
+                {"email": "Successfully activated"},
+                status=status.HTTP_200_OK,
+                template_name="email.html",
             )
         except jwt.ExpiredSignatureError as error:
             return Response(
@@ -112,8 +119,8 @@ class CheckDigitsView(generics.GenericAPIView):
         id = force_str(urlsafe_base64_decode(uidb64))
         user = User.objects.get(id=id)
         digits = str(user.created_at)
-        dot = digits.index('.') + 1
-        send_digits = digits[dot:dot + 6]
+        dot = digits.index(".") + 1
+        send_digits = digits[dot : dot + 6]
         if check_digits == send_digits:
             return Response({"message": "correct"}, status=status.HTTP_200_OK)
         return Response({"message": "incorrect"}, status=status.HTTP_400_BAD_REQUEST)

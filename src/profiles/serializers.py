@@ -28,7 +28,7 @@ class ProfileEditSerializer(serializers.ModelSerializer):
         fields = ("id", "username", "email", "favorite_tour")
 
     def validate(self, attrs):
-        username = attrs.get("username", "").split(' ')
+        username = attrs.get("username", "").split(" ")
         for name in username:
             if not name.isalpha() or (name.isalpha() and len(username) != 2):
                 raise serializers.ValidationError(
@@ -39,7 +39,7 @@ class ProfileEditSerializer(serializers.ModelSerializer):
 
 
 class ChangePasswordSerializer(serializers.ModelSerializer):
-    email = serializers.EmailField(required=True)
+    email = serializers.EmailField(required=True, write_only=True)
     password_old = serializers.CharField(
         required=True,
         write_only=True,

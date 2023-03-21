@@ -125,7 +125,7 @@ class Tour(models.Model):
         Category, on_delete=models.CASCADE, blank=True, null=True
     )
     guide = models.ForeignKey(Guide, on_delete=models.CASCADE, null=True, blank=True)
-    qr_code = models.CharField(default='', max_length=8, blank=True, null=True)
+    qr_code = models.CharField(default="", max_length=8, blank=True, null=True)
 
     def __str__(self):
         return self.title
@@ -148,12 +148,11 @@ class Tour(models.Model):
         strings_upp = string.ascii_uppercase
         strings_low = string.ascii_lowercase
         digits = string.digits
-        str_up = ''.join(random.choice(strings_upp) for i in range(2))
-        str_low = ''.join(random.choice(strings_low) for i in range(2))
-        dig_ = ''.join(random.choice(digits) for i in range(4))
+        str_up = "".join(random.choice(strings_upp) for i in range(2))
+        str_low = "".join(random.choice(strings_low) for i in range(2))
+        dig_ = "".join(random.choice(digits) for i in range(4))
         self.qr_code = str_up + dig_ + str_low
         return super(Tour, self).save(*args, **kwargs)
-
 
 
 class AboutUs(models.Model):
