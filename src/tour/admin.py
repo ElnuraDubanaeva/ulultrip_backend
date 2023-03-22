@@ -12,7 +12,7 @@ class TourAdmin(admin.ModelAdmin):
     search_fields = "title description".split()
     list_display_links = ["title"]
     list_display = (
-        "title price date_departure guide complexity duration average_rating".split()
+        "title price date_departure actual_limit complexity duration average_rating".split()
     )
     list_editable = "price date_departure".split()
     ordering = ["date_departure"]

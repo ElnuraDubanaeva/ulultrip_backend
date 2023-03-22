@@ -140,10 +140,6 @@ class Tour(models.Model):
             total += i.rating
         return total / count
 
-    def set_actual_limit(self):
-        self.actual_limit = self.quantity_limit
-        return self.actual_limit
-
     def save(self, *args, **kwargs):
         strings_upp = string.ascii_uppercase
         strings_low = string.ascii_lowercase
