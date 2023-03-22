@@ -47,7 +47,7 @@ class TourSerializer(serializers.ModelSerializer):
         fields = (
             "id title description price guide date_departure date_arrival date_published"
             " region is_hot duration complexity category average_rating quantity_limit"
-            " set_actual_limit tour_images slug uploaded_images qr_code".split()
+            " actual_limit tour_images slug uploaded_images qr_code".split()
         )
 
         def create(self, validated_data):
