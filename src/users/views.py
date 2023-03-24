@@ -160,6 +160,7 @@ class GoogleLogin(APIView):
             user = User.objects.create_user(
                 username=data["email"],
                 email=data["email"],
+                is_verified=True,
                 password=make_password(BaseUserManager().make_random_password()),
             )
             user.save()
