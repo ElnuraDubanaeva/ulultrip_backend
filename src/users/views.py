@@ -1,10 +1,17 @@
 import jwt
+from django.conf import settings
+from django.contrib.auth.base_user import BaseUserManager
+from django.contrib.auth.hashers import make_password
 from django.shortcuts import render
 from django.utils.encoding import smart_bytes, force_str
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status, generics
 from rest_framework.response import Response
 from rest_framework.views import APIView
+
+from .models import User
 from .serializers import (
     RegisterSerializer,
     EmailVerifySerializer,
@@ -13,11 +20,7 @@ from .serializers import (
     SetNewPasswordSerializer,
     CheckDigitsSerializer,
 )
-from .models import User
-from django.conf import settings
-from drf_yasg.utils import swagger_auto_schema
-from drf_yasg import openapi
-from .services import UserService
+from .services import UserService, get_user_info_from_google, jwt_tokens_for_user
 
 
 class RegisterView(generics.GenericAPIView):
@@ -140,3 +143,24 @@ class SetNewPasswordView(generics.GenericAPIView):
 
 def main(request):
     return render(request, "login.html")
+
+
+class GoogleLogin(APIView):
+    def post(self, request):
+        data = get_user_info_from_google(request.data.get("token"))
+        if "error" in data:
+            return Response(
+                data={"message": data.get("error").get("message")},
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
+        try:
+            user = User.objects.get(email=data["email"])
+        except User.DoesNotExist:
+            user = User.objects.create_user(
+                username=data["email"],
+                email=data["email"],
+                password=make_password(BaseUserManager().make_random_password()),
+            )
+            user.save()
+        return Response(data=jwt_tokens_for_user(user), status=status.HTTP_201_CREATED)
+
