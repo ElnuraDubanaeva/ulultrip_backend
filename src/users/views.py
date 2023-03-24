@@ -46,6 +46,7 @@ class RegisterView(generics.GenericAPIView):
 
 class VerifyEmailView(APIView):
     serializer_class = EmailVerifySerializer
+    template_name = 'email.html'
     token_param_config = openapi.Parameter(
         "token",
         in_=openapi.IN_QUERY,
