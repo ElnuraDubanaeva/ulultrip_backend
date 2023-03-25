@@ -63,20 +63,11 @@ class VerifyEmailView(APIView):
             if not user.is_verified:
                 user.is_verified = True
                 user.save()
-            return Response(
-                {"email": "Successfully activated"},
-                status=status.HTTP_200_OK,
-                template_name="email.html",
-            )
+            return render(request,"email.html")
         except jwt.ExpiredSignatureError as error:
-            return Response(
-                {"error": "Activation link expired"}, status=status.HTTP_400_BAD_REQUEST
-            )
+            return render(request, "linkexpired.html")
         except jwt.exceptions.DecodeError as error:
-            return Response(
-                {"error": "Invalid token"}, status=status.HTTP_400_BAD_REQUEST
-            )
-
+            return render(request, "invalidtoken.html")
 
 class LoginView(generics.GenericAPIView):
     serializer_class = LoginSerializer
