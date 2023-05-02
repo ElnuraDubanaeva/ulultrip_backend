@@ -2,9 +2,17 @@ from django.urls import path, include
 from rest_framework import routers
 
 from src.profiles.views import FavoriteTourApiView
-from .views import (RegionListAPIView, ReviewViewSet, TourDetailView, 
-                    GetSlugTitleListAPIView, TourListAPIView, GuideListAPIView,
-                    CategoryListAPIView, TourReviewsListAPIView, AboutUsListAPIView)
+from .views import (
+    RegionListAPIView,
+    ReviewViewSet,
+    TourDetailView,
+    GetSlugTitleListAPIView,
+    TourListAPIView,
+    GuideListAPIView,
+    CategoryListAPIView,
+    TourReviewsListAPIView,
+    AboutUsListAPIView,
+)
 
 router = routers.SimpleRouter()
 router.register(r"review", ReviewViewSet, basename="review")

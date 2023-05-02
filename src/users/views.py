@@ -48,7 +48,7 @@ class RegisterView(generics.GenericAPIView):
 
 class VerifyEmailView(APIView):
     serializer_class = EmailVerifySerializer
-    template_name = 'email.html'
+    template_name = "email.html"
     token_param_config = openapi.Parameter(
         "token",
         in_=openapi.IN_QUERY,
@@ -65,11 +65,12 @@ class VerifyEmailView(APIView):
             if not user.is_verified:
                 user.is_verified = True
                 user.save()
-            return render(request,"email.html")
+            return render(request, "email.html")
         except jwt.ExpiredSignatureError as error:
             return render(request, "linkexpired.html")
         except jwt.exceptions.DecodeError as error:
             return render(request, "invalidtoken.html")
+
 
 class LoginView(generics.GenericAPIView):
     serializer_class = LoginSerializer
@@ -130,6 +131,7 @@ class SetNewPasswordView(generics.GenericAPIView):
             status=status.HTTP_200_OK,
         )
 
+
 class GoogleLogin(APIView):
     def post(self, request):
         data = UserService.get_user_info_from_google(request.data.get("token"))
@@ -148,5 +150,6 @@ class GoogleLogin(APIView):
                 password=make_password(BaseUserManager().make_random_password()),
             )
             user.save()
-        return Response(data=UserService.jwt_tokens_for_user(user), status=status.HTTP_201_CREATED)
-
+        return Response(
+            data=UserService.jwt_tokens_for_user(user), status=status.HTTP_201_CREATED
+        )

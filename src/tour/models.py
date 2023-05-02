@@ -6,6 +6,7 @@ from .services import TourServices
 from src.users.models import User
 from .constants import TourConstants
 
+
 class Guide(models.Model):
     class Meta:
         verbose_name = "Guide"
@@ -90,6 +91,7 @@ class Tour(models.Model):
     class Meta:
         verbose_name = "Tour"
         verbose_name_plural = "Tours"
+
     title = models.CharField("Название", max_length=255)
     description = models.TextField("Описание")
     price = models.SmallIntegerField("Цена")
@@ -102,7 +104,9 @@ class Tour(models.Model):
     actual_limit = models.PositiveIntegerField(editable=False, blank=True, null=True)
     is_hot = models.BooleanField(default=False)
     duration = models.CharField(max_length=255, choices=TourConstants.DURATION_CHOICES)
-    complexity = models.CharField(max_length=255, choices=TourConstants.COMPLEXITY_CHOICES)
+    complexity = models.CharField(
+        max_length=255, choices=TourConstants.COMPLEXITY_CHOICES
+    )
     category = models.ForeignKey(
         Category, on_delete=models.CASCADE, blank=True, null=True
     )
