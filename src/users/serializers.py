@@ -5,7 +5,6 @@ from django.utils.http import urlsafe_base64_decode
 
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework import serializers, exceptions
-from rest_framework.validators import UniqueValidator
 
 from .models import User
 
@@ -31,13 +30,11 @@ class RegisterSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(
         max_length=50,
         min_length=3,
-        validators=[UniqueValidator(queryset=User.objects.all())],
     )
     username = serializers.CharField(
         max_length=50,
         min_length=2,
         help_text="Username should contain only alphanumeric characters",
-        validators=[UniqueValidator(queryset=User.objects.all())],
     )
 
     class Meta:

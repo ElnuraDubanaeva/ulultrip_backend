@@ -2,13 +2,10 @@ from django.contrib.sites.shortcuts import get_current_site
 from rest_framework import request
 from rest_framework.reverse import reverse
 from rest_framework_simplejwt.tokens import RefreshToken
-from src.users.models import User
 from src.users.utils import Util
 
 
 class ProfileService:
-    model = User
-
     @classmethod
     def add_to_favorite(cls, user, tour):
         user.favorite_tour.add(tour)

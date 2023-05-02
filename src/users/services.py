@@ -48,20 +48,27 @@ class UserService:
         }
         Util.send_email(data)
 
+    @classmethod
+    def jwt_tokens_for_user(cls, user):
+        refresh = RefreshToken.for_user(user)
+        data = {
+            "username": user.username,
+            "refresh_token": str(refresh),
+            "access_token": str(refresh.access_token),
+        }
+        return data
 
-def jwt_tokens_for_user(user):
-    refresh = RefreshToken.for_user(user)
-    data = {
-        "username": user.username,
-        "refresh_token": str(refresh),
-        "access_token": str(refresh.access_token),
-    }
-    return data
-
-
-def get_user_info_from_google(token):
-    payload = {"access_token": token}
-    user_info = requests.get(
-        "https://www.googleapis.com/oauth2/v2/userinfo", params=payload
-    )
-    return json.loads(user_info.text)
+    @classmethod
+    def get_user_info_from_google(cls, token):
+        payload = {"access_token": token}
+        user_info = requests.get(
+            "https://www.googleapis.com/oauth2/v2/userinfo", params=payload
+        )
+        return json.loads(user_info.text)
+    @classmethod
+    def send_digits(cls, id):
+            user = User.objects.get(id=id)
+            digits = str(user.created_at)
+            dot = digits.index(".") + 1
+            send_digits = digits[dot : dot + 6]
+            return send_digits
