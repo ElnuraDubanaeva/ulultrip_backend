@@ -3,7 +3,6 @@ from rest_framework import serializers
 from src.users.models import User
 from src.tour.models import Tour
 from src.tour.serializers import TourSerializer
-from rest_framework.validators import UniqueValidator
 
 
 class FavoriteTourSerializer(serializers.ModelSerializer):
@@ -17,7 +16,6 @@ class ProfileEditSerializer(serializers.ModelSerializer):
         max_length=30,
         min_length=2,
         required=True,
-        validators=[UniqueValidator(queryset=User.objects.all())],
         help_text="Username should contain only alphanumeric characters",
     )
     email = serializers.EmailField(required=True)
@@ -56,7 +54,6 @@ class ChangePasswordSerializer(serializers.ModelSerializer):
         min_length=6,
         write_only=True,
         required=True,
-        help_text=password_validation.password_validators_help_texts(),
         style={"input_type": "password"},
     )
 
@@ -82,6 +79,4 @@ class AddToFavoriteSerializer(serializers.ModelSerializer):
 
 
 class RequestEmailValidateSerializer(serializers.Serializer):
-    email = serializers.EmailField(
-        validators=[UniqueValidator(queryset=User.objects.all())]
-    )
+    email = serializers.EmailField()
