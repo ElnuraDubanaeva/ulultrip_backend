@@ -1,9 +1,10 @@
-from src.users.models import User
 from django.db import models
 from django.core.validators import FileExtensionValidator
+
 from src.users.utils import path_and_rename
-import string
-import random
+from .services import TourServices
+from src.users.models import User
+from .constants import TourConstants
 
 
 class Guide(models.Model):
@@ -36,14 +37,6 @@ class Category(models.Model):
 
 
 class Review(models.Model):
-    RATING_CHOICES = (
-        (1, 1),
-        (2, 2),
-        (3, 3),
-        (4, 4),
-        (5, 5),
-    )
-
     class Meta:
         verbose_name = "Review"
         verbose_name_plural = "Reviews"
@@ -55,7 +48,7 @@ class Review(models.Model):
     post = models.ForeignKey(
         "Tour", on_delete=models.CASCADE, related_name="tour_reviews"
     )
-    rating = models.SmallIntegerField(choices=RATING_CHOICES, default=5)
+    rating = models.SmallIntegerField(choices=TourConstants.RATING_CHOICES, default=5)
     date_published = models.DateTimeField(auto_now=True)
 
     def __str__(self):
@@ -99,15 +92,6 @@ class Tour(models.Model):
         verbose_name = "Tour"
         verbose_name_plural = "Tours"
 
-    DURATION_CHOICES = (("1", "День"), ("3", "3 дня"), ("7", "7 дней"))
-
-    COMPLEXITY_CHOICES = (
-        ("Easy", "Легкий"),
-        ("Medium", "Средний"),
-        ("Hard", "Тяжелый"),
-        ("Extra", "Экстра"),
-    )
-
     title = models.CharField("Название", max_length=255)
     description = models.TextField("Описание")
     price = models.SmallIntegerField("Цена")
@@ -119,8 +103,10 @@ class Tour(models.Model):
     quantity_limit = models.PositiveIntegerField()
     actual_limit = models.PositiveIntegerField(editable=False, blank=True, null=True)
     is_hot = models.BooleanField(default=False)
-    duration = models.CharField(max_length=255, choices=DURATION_CHOICES)
-    complexity = models.CharField(max_length=255, choices=COMPLEXITY_CHOICES)
+    duration = models.CharField(max_length=255, choices=TourConstants.DURATION_CHOICES)
+    complexity = models.CharField(
+        max_length=255, choices=TourConstants.COMPLEXITY_CHOICES
+    )
     category = models.ForeignKey(
         Category, on_delete=models.CASCADE, blank=True, null=True
     )
@@ -141,13 +127,7 @@ class Tour(models.Model):
         return total / count
 
     def save(self, *args, **kwargs):
-        strings_upp = string.ascii_uppercase
-        strings_low = string.ascii_lowercase
-        digits = string.digits
-        str_up = "".join(random.choice(strings_upp) for i in range(2))
-        str_low = "".join(random.choice(strings_low) for i in range(2))
-        dig_ = "".join(random.choice(digits) for i in range(4))
-        self.qr_code = str_up + dig_ + str_low
+        self.qr_code = TourServices.make_qr_code()
         return super(Tour, self).save(*args, **kwargs)
 
 

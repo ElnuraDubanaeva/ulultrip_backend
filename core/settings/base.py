@@ -1,9 +1,9 @@
-import os
 from pathlib import Path
 from decouple import config
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
-PRODUCTION = True
+PRODUCTION = config("PRODUCTION", cast=bool, default=False)
+
 APPS = [
     "src.profiles",
     "src.users",
@@ -24,6 +24,7 @@ INSTALLED_LIBRARIES = [
 THEME_APPS = ["jazzmin"]
 INSTALLED_APPS = [
     *THEME_APPS,
+    "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
@@ -32,7 +33,6 @@ INSTALLED_APPS = [
     "django.contrib.sites",
     *INSTALLED_LIBRARIES,
     *APPS,
-    "django.contrib.admin",
 ]
 
 MIDDLEWARE = [
@@ -81,10 +81,10 @@ AUTH_PASSWORD_VALIDATORS = [
         "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
     {
-        "NAME": "src.users.registration_validators.IsIncludeOneDigit",
+        "NAME": "src.users.validators.IsIncludeOneDigit",
     },
     {
-        "NAME": "src.users.registration_validators.IsIncludeOnlyLatyn",
+        "NAME": "src.users.validators.IsIncludeOnlyLatyn",
     },
 ]
 
@@ -93,9 +93,9 @@ LANGUAGE_CODE = "en-us"
 USE_I18N = True
 USE_L10N = True
 USE_TZ = True
-
-STATIC_URL = "/static/"
-MEDIA_URL = "/media/"
+    
+STATIC_URL = "static/"
+MEDIA_URL = "media/"
 MEDIA_ROOT = BASE_DIR / "mediafiles"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
@@ -108,6 +108,11 @@ REST_FRAMEWORK = {
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
     "PAGE_SIZE": 10,
 }
+
+AUTHENTICATION_BACKENDS = [
+    "django.contrib.auth.backends.ModelBackend",
+    "allauth.account.auth_backends.AuthenticationBackend",
+]
 SITE_ID = 1
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = "smtp.gmail.com"

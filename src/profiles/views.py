@@ -26,13 +26,11 @@ class ProfileChangePasswordViewSet(ModelViewSet):
     def update(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
-        email = request.user.email
-        user = User.objects.get(email=email)
+        user = User.objects.get(email=request.user.email)
         password_new_again = serializer.validated_data.get("password_new_again")
         password_old = serializer.validated_data.get("password_old")
         password_new = serializer.validated_data.get("password_new")
-        password_check = user.check_password(password_old)
-        if not password_check:
+        if not user.check_password(password_old):
             raise exceptions.ValidationError("Old password is not valid")
         if password_new != password_new_again:
             raise exceptions.ValidationError(
