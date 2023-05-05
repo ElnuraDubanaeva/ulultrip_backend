@@ -8,12 +8,12 @@ services:
     container_name: ulul1_web
     restart: always
     command: sh -c "python manage.py makemigrations && python manage.py migrate && python manage.py collectstatic
-        --no-input && gunicorn -b 0.0.0.0:8088 core.wsgi --reload"
+        --no-input && gunicorn -b 0.0.0.0:8880 core.wsgi --reload"
     volumes:
       - static_volume:/home/app/web/staticfiles
       - media_volume:/home/app/web/mediafiles
-    expose:
-      - 8088
+    ports:
+      - "8880:8880"
     depends_on:
       - db
   db:
@@ -21,7 +21,7 @@ services:
     container_name: ulul1_db
     restart: always
     ports:
-      - '5535:5432'
+      - "5535:5432"
     volumes:
       - 'postgres_data:/var/lib/postgresql/data'
     env_file:
@@ -37,10 +37,12 @@ services:
       - static_volume:/home/app/web/staticfiles
       - media_volume:/home/app/web/mediafiles
     ports:
-      - '8880:80'
+      - "89:89"
+      - "449:449"
     depends_on:
       - web
 volumes:
   postgres_data:
   static_volume:
   media_volume:
+
