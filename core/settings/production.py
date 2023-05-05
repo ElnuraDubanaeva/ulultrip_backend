@@ -4,7 +4,9 @@ from decouple import config, Csv
 SECRET_KEY = config("SECRET_KEY")
 
 DEBUG = config("DEBUG", default=False, cast=bool)
+
 ALLOWED_HOSTS = config("ALLOWED_HOSTS", cast=Csv())
+
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
@@ -26,9 +28,11 @@ DATABASES = {
     }
 }
 
+
 CORS_ALLOWED_ORIGINS = config("CORS_ALLOWED_ORIGINS", cast=Csv())
 CORS_ALLOW_ALL_ORIGINS = True
 CSRF_TRUSTED_ORIGINS = config("CSRF_TRUSTED_ORIGINS", cast=Csv())
+
 SOCIALACCOUNT_LOGIN_ON_GET = True
 
 
