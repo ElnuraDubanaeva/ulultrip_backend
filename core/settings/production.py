@@ -4,7 +4,7 @@ from decouple import config
 SECRET_KEY = config("SECRET_KEY")
 
 DEBUG = config("DEBUG", default=False, cast=bool)
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = ["localhost","ulultrip.geeks.kg"]
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
@@ -27,8 +27,8 @@ DATABASES = {
 }
 
 CORS_ALLOWED_ORIGINS = [
+    "http://ulultrip.geeks.kg:8880",
     "http://localhost",
-    "http://localhost:8000",
     "http://127.0.0.1:8000",
     "http://164.92.190.147:8880",
     "http://164.92.190.147:82",
@@ -40,7 +40,7 @@ CORS_ALLOW_ALL_ORIGINS = True
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:8000",
     "http://127.0.0.1:8000",
-    "http://ulul:8000",
+    "http://ulultrip.geeks.kg:8880",
     "http://localhost:82",
     "http://164.92.190.147:82",
     "http://164.92.190.147:8880",
