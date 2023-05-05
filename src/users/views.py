@@ -5,8 +5,10 @@ from django.contrib.auth.hashers import make_password
 from django.shortcuts import render
 from django.utils.encoding import smart_bytes, force_str
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
+
 from rest_framework import status, generics
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -20,7 +22,7 @@ from .serializers import (
     SetNewPasswordSerializer,
     CheckDigitsSerializer,
 )
-from .services import UserService, get_user_info_from_google, jwt_tokens_for_user
+from .services import UserService
 
 
 class RegisterView(generics.GenericAPIView):
@@ -46,7 +48,7 @@ class RegisterView(generics.GenericAPIView):
 
 class VerifyEmailView(APIView):
     serializer_class = EmailVerifySerializer
-    template_name = 'email.html'
+    template_name = "email.html"
     token_param_config = openapi.Parameter(
         "token",
         in_=openapi.IN_QUERY,
@@ -63,11 +65,12 @@ class VerifyEmailView(APIView):
             if not user.is_verified:
                 user.is_verified = True
                 user.save()
-            return render(request,"email.html")
+            return render(request, "email.html")
         except jwt.ExpiredSignatureError as error:
             return render(request, "linkexpired.html")
         except jwt.exceptions.DecodeError as error:
             return render(request, "invalidtoken.html")
+
 
 class LoginView(generics.GenericAPIView):
     serializer_class = LoginSerializer
@@ -88,7 +91,6 @@ class RequestResetPasswordEmailView(generics.GenericAPIView):
         if User.objects.filter(email=email).exists():
             user = User.objects.get(email=email)
             uidb64 = urlsafe_base64_encode(smart_bytes(user.id))
-            # 2023-03-16 09:41:14.860849
             UserService.send_mail_reset_password(user=user, request=request)
             return Response(
                 {
@@ -112,10 +114,7 @@ class CheckDigitsView(generics.GenericAPIView):
         uidb64 = serializer.validated_data.get("uidb64")
         check_digits = serializer.validated_data.get("digits")
         id = force_str(urlsafe_base64_decode(uidb64))
-        user = User.objects.get(id=id)
-        digits = str(user.created_at)
-        dot = digits.index(".") + 1
-        send_digits = digits[dot : dot + 6]
+        send_digits = UserService.send_digits(id)
         if check_digits == send_digits:
             return Response({"message": "correct"}, status=status.HTTP_200_OK)
         return Response({"message": "incorrect"}, status=status.HTTP_400_BAD_REQUEST)
@@ -133,13 +132,9 @@ class SetNewPasswordView(generics.GenericAPIView):
         )
 
 
-def main(request):
-    return render(request, "login.html")
-
-
 class GoogleLogin(APIView):
     def post(self, request):
-        data = get_user_info_from_google(request.data.get("token"))
+        data = UserService.get_user_info_from_google(request.data.get("token"))
         if "error" in data:
             return Response(
                 data={"message": data.get("error").get("message")},
@@ -155,5 +150,6 @@ class GoogleLogin(APIView):
                 password=make_password(BaseUserManager().make_random_password()),
             )
             user.save()
-        return Response(data=jwt_tokens_for_user(user), status=status.HTTP_201_CREATED)
-
+        return Response(
+            data=UserService.jwt_tokens_for_user(user), status=status.HTTP_201_CREATED
+        )
