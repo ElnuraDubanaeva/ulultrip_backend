@@ -36,16 +36,16 @@ services:
       - ./nginx/:/etc/nginx/conf.d/
       - static_volume:/home/app/web/staticfiles
       - media_volume:/home/app/web/mediafiles
-      - front_media:/home/app/web/front_media
+      - front:/home/app/front
     ports:
-      - '80:80'
-      - '443:443'
-      - '8443:8443'
+      - '89:80'
+      - '449:443'
+      - '8880:8880'
     depends_on:
       - ulul_backend
 volumes:
   postgres_data:
   static_volume:
   media_volume:
-  front_media:
+  front:
 
