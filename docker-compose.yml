@@ -9,14 +9,11 @@ services:
     command: sh -c "python manage.py makemigrations && python manage.py migrate && python manage.py collectstatic
         --no-input && gunicorn -b 0.0.0.0:8880 core.wsgi --reload"
     volumes:
-      - ../:/home/app/web
       - static_volume:/home/app/web/staticfiles
       - media_volume:/home/app/web/mediafiles
     depends_on:
       - db
-    ports:
-      -8000:8000
-    
+     
   db:
     image: postgres:latest
     container_name: ulul_db
@@ -34,22 +31,20 @@ services:
   nginx:
     image: nginx:1.13
     build: ./nginx
-    container_name: ulul_nginx
     restart: unless-stopped
     volumes:
       - ./nginx/:/etc/nginx/conf.d/
       - static_volume:/home/app/web/staticfiles
       - media_volume:/home/app/web/mediafiles
-      - front:/home/app/front
+      - ../front:/home/app/front
     ports:
       - '89:80'
       - '449:443'
       - '8880:8880'
     depends_on:
-      - ulul_backend
+      - back
 volumes:
   postgres_data:
   static_volume:
   media_volume:
-  front:
 
