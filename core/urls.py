@@ -11,10 +11,10 @@ admin.site.index_title = "Модели"
 
 urlpatterns = [
     path("admin/", admin.site.urls, name="admin"),
-    path("home/", include("src.tour.urls")),
-    path("local/", include("django.conf.urls.i18n")),
-    path("users/", include("src.users.urls")),
-    path("profiles/", include("src.profiles.urls")),
+    path("api/v1/home/", include("src.tour.urls")),
+    path("api/v1/local/", include("django.conf.urls.i18n")),
+    path("api/v1/users/", include("src.users.urls")),
+    path("api/v1/profiles/", include("src.profiles.urls")),
     *urlpatterns,
 ]
 if config("DEBUG"):
