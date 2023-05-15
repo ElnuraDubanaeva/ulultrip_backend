@@ -13,7 +13,7 @@ services:
       - media_volume:/home/app/web/mediafiles
     depends_on:
       - db
-  ulul_db:
+  db:
     image: postgres:latest
     container_name: ulul_db
     restart: unless-stopped
