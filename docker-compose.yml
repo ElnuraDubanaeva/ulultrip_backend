@@ -1,18 +1,22 @@
 version: '3.3'
 
 services:
-  ulul_backend:
+  back:
+    restart: unless-stopped
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: ulul_backend
     command: sh -c "python manage.py makemigrations && python manage.py migrate && python manage.py collectstatic
         --no-input && gunicorn -b 0.0.0.0:8880 core.wsgi --reload"
     volumes:
+      - ../:/home/app/web
       - static_volume:/home/app/web/staticfiles
       - media_volume:/home/app/web/mediafiles
     depends_on:
       - db
+    ports:
+      -8000:8000
+    
   db:
     image: postgres:latest
     container_name: ulul_db
@@ -27,7 +31,7 @@ services:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-  ulul_nginx:
+  nginx:
     image: nginx:1.13
     build: ./nginx
     container_name: ulul_nginx
