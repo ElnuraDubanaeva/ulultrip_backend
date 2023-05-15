@@ -50,7 +50,7 @@ services:
       - back
     networks:
       - nginx_network
-      - front_network
+      - ulul-trip-front_front-network
 volumes:
   postgres_data:
   static_volume:
@@ -61,5 +61,5 @@ networks:
     driver: bridge
   db_network:
     driver: bridge
-  front-network:
+  ulul-trip-front_front-network:
     external: true
