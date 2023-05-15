@@ -6,6 +6,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    ports:
+      - 8880-8000
     command: sh -c "python manage.py makemigrations && python manage.py migrate && python manage.py collectstatic
         --no-input && gunicorn -b 0.0.0.0:8880 core.wsgi --reload"
     volumes:
@@ -15,8 +17,7 @@ services:
       - db
      
   db:
-    image: postgres:latest
-    container_name: ulul_db
+    image: postgres:latest 
     restart: unless-stopped
     ports:
       - "5535:5432"
@@ -40,7 +41,6 @@ services:
     ports:
       - '89:80'
       - '449:443'
-      - '8880:8880'
     depends_on:
       - back
 volumes:
