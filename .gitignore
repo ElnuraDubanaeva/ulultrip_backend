@@ -11,6 +11,8 @@ local_settings.py
 db.sqlite3
 media
 mediafiles
+back_media
+back_static
 ### Linux ###
 *~
 
@@ -195,13 +197,15 @@ celerybeat-schedule
 
 # dotenv
 .env
-
+.env.save
 # virtualenv
 .venv
 venv/
 ENV/
 static
-
+storage
+storage/
+dump.sql
 # Spyder project settings
 .spyderproject
 .spyproject

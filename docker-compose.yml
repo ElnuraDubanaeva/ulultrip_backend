@@ -11,10 +11,10 @@ services:
     command: sh -c "python manage.py makemigrations && python manage.py migrate && python manage.py collectstatic
         --no-input && gunicorn -b 0.0.0.0:8880 core.wsgi --reload"
     volumes:
-      - static_volume:/home/app/web/staticfiles
-      - media_volume:/home/app/web/mediafiles
-    depends_on:
-      - db
+      - .:/home/app/
+      - ./ulul_dump.sql:/home/app/dump.sql
+      - ./back_static:/home/app/back_static
+      - ./back_media:/home/app/back_media
     networks:
       - nginx_network
       - db_network
@@ -25,34 +25,29 @@ services:
     ports:
       - "5535:5432"
     volumes:
-      - 'postgres_data:/var/lib/postgresql/data'
+      - ./storage/data:/var/lib/postgresql/data
+      
     env_file:
       - ./.env
     networks:
       - db_network
-    environment:
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+
   nginx:
     image: nginx:1.13
-    build: ./nginx
     restart: unless-stopped
     volumes:
-      - ./nginx/:/etc/nginx/conf.d/
-      - static_volume:/home/app/web/staticfiles
-      - media_volume:/home/app/web/mediafiles
-      - ../front:/home/app/front
+      - ./nginx:/etc/nginx/conf.d/
+      - ../Ulul-trip-front/build:/home/app/front/build
+      - media_volume:/home/app/back_media
+      - static_volume:/home/app/back_static
     ports:
       - '89:80'
       - '449:443'
-    depends_on:
-      - back
     networks:
       - nginx_network
       - ulul-trip-front_front-network
+
 volumes:
-  postgres_data:
   static_volume:
   media_volume:
 
@@ -62,4 +57,4 @@ networks:
   db_network:
     driver: bridge
   ulul-trip-front_front-network:
-    external: true
+    external: true 
