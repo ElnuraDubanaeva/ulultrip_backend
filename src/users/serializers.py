@@ -47,16 +47,6 @@ class RegisterSerializer(serializers.ModelSerializer):
             "password_again",
         )
 
-    def validate(self, attrs):
-        username = attrs.get("username").split(" ")
-        for name in username:
-            if not name.isalpha() or (name.isalpha() and len(username) != 2):
-                raise serializers.ValidationError(
-                    f"The users username: {name} should only contain alphabetical characters ex: Ivan Ivanov",
-                    400,
-                )
-        return super().validate(attrs)
-
     def create(self, validated_data):
         password = validated_data.pop("password", "")
         password_again = validated_data.pop("password_again", "")

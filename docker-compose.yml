@@ -12,7 +12,6 @@ services:
         --no-input && gunicorn -b 0.0.0.0:8880 core.wsgi --reload"
     volumes:
       - .:/home/app/
-      - ./ulul_dump.sql:/home/app/dump.sql
       - ./back_static:/home/app/back_static
       - ./back_media:/home/app/back_media
     networks:
@@ -42,7 +41,6 @@ services:
       - static_volume:/home/app/back_static
     ports:
       - '89:80'
-      - '449:443'
     networks:
       - nginx_network
       - ulul-trip-front_front-network
